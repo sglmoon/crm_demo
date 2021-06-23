@@ -44,19 +44,24 @@ $(function() {
             password: $('#form_login [name=pwd]').val()
         }
         $.ajax({
-            url: '/api/login',
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function(res) {
-                if (res.status !== 200) {
-                    console.log('登录失败')
-                    layer.msg('登录失败')
-                } else {
-                    console.log('登录成功')
-                    layer.msg('登录成功')
+                url: '/api/login',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(res) {
+                    if (res.status !== 200) {
+                        console.log('登录失败')
+                        layer.msg('登录失败')
+                        localStorage.setItem('token', res.token)
+                    } else {
+                        console.log('登录成功')
+                        layer.msg('登录成功')
+                    }
                 }
-            }
+            })
+            //接口服务暂无时，测试token
+        var token = localStorage.getItem('token')
+        if (!token) localStorage.setItem('token', '123321')
+        location.href = '/index.html'
 
-        })
     })
 })
