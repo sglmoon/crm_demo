@@ -53,7 +53,11 @@ $(function() {
 
     //获取分类下拉框
     function initCate() {
-        var cateList = [{ id: 1, name: '草稿' }, { id: 2, name: '已发布' }]
+        var cateList = [
+            { id: 1, name: '国际' },
+            { id: 2, name: '军事' },
+            { id: 3, name: '航天' }
+        ]
         $.ajax({
             url: '/api/article/getAticleCate',
             method: 'GET',
