@@ -27,7 +27,7 @@ $(function() {
             username: $('#form_reg [name=userName]').val(),
             password: $('#form_reg [name=pwd]').val()
         }
-        $.post('/api/auth/createUser', formData, function(res) {
+        $.post('/api/user/regUser', formData, function(res) {
             if (res.status !== 200) {
                 console.log('注册失败')
                 layer.msg('注册失败')
