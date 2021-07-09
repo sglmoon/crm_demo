@@ -21,15 +21,13 @@ $(function() {
     $('#form_info').on('submit', function(e) {
         e.preventDefault()
         $.ajax({
-            url: '/api/user/rePwd',
+            url: '/api/user/updatePwd',
             method: 'POST',
             data: $(this).serialize(),
             success: function(res) {
-                if (res.status !== 200) {
-                    return layui.layer.msg('密码修改失败')
-                }
-                layui.layer.msg('密码修改成功!')
-                    //重置表单
+                if (res.code !== 1) return layui.layer.msg('密码修改失败')
+                layui.layer.msg('密码修改成功!');
+                //重置表单
                 $('#form_info')[0].reset()
             }
         })

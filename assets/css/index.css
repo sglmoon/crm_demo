@@ -28,3 +28,17 @@ iframe {
 a {
     transition: none!important;
 }
+
+.text-avatar {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-color: #009688;
+    border-radius: 50%;
+    line-height: 32px;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    position: relative;
+    top: 2px;
+}

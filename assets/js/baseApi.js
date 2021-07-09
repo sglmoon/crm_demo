@@ -6,4 +6,11 @@ $.ajaxPrefilter(function(options) {
         if (!options.headers) options.headers = {}
         options.headers['Authorization'] = localStorage.getItem('token')
     }
+    //身份权限校验失败，跳转登录页
+    options.complete = function(res) {
+        if (res && res.responseJSON && res.responseJSON.code === 401) {
+            localStorage.removeItem('token')
+            location.href = '/login.html'
+        }
+    }
 })

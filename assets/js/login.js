@@ -4,15 +4,15 @@ $(function() {
         $('.register-box').show()
     })
     $('#link_login').on('click', function() {
-            $('.register-box').hide()
-            $('.login-box').show()
-        })
-        //自定义layui表单校验规则
+        $('.register-box').hide()
+        $('.login-box').show()
+    });
+    //自定义layui表单校验规则
     var form = layui.form
     var layer = layui.layer
     form.verify({
         pwd: [
-            /^[\S]{6,12}$/, '密码必须6到12位，且不能出现空格'
+            /^[\S]{6,18}$/, '密码必须6到18位，且不能出现空格'
         ],
         repwd: function(value, item) {
             var pwd = $('.register-box [name=pwd]').val()
@@ -24,44 +24,37 @@ $(function() {
     $('#form_reg').on('submit', function(e) {
         e.preventDefault();
         var formData = {
-            username: $('#form_reg [name=userName]').val(),
-            password: $('#form_reg [name=pwd]').val()
+            userName: $('#form_reg [name=userName]').val(),
+            pwd: $('#form_reg [name=pwd]').val()
         }
-        $.post('/api/user/regUser', formData, function(res) {
-            if (res.status !== 200) {
-                console.log('注册失败')
-                layer.msg('注册失败')
-            } else {
-                console.log('注册成功')
-                layer.msg('注册成功')
+        $.post('/api/auth/regUser', formData, function(res) {
+            if (res.code !== 1) {
+                return layer.msg('注册失败:' + res.msg)
             }
+            layer.msg('注册成功');
+            //显示登陆页
+            $('#link_login').click()
         })
     })
     $('#form_login').submit(function(e) {
         e.preventDefault();
         var formData = {
-            username: $('#form_login [name=userName]').val(),
-            password: $('#form_login [name=pwd]').val()
+            userName: $('#form_login [name=userName]').val(),
+            pwd: $('#form_login [name=pwd]').val()
         }
         $.ajax({
-                url: '/api/auth/login',
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(res) {
-                    if (res.status !== 200) {
-                        console.log('登录失败')
-                        layer.msg('登录失败')
-                        localStorage.setItem('token', res.token)
-                    } else {
-                        console.log('登录成功')
-                        layer.msg('登录成功')
-                    }
+            url: '/api/auth/login',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(res) {
+                if (res.code !== 1) {
+                    return layer.msg('登录失败:' + res.msg)
                 }
-            })
-            //接口服务暂无时，测试token
-        var token = localStorage.getItem('token')
-        if (!token) localStorage.setItem('token', '123321')
-        location.href = '/index.html'
-
+                layer.msg('登录成功');
+                //存储token,跳转首页
+                localStorage.setItem('token', res.data)
+                location.href = '/index.html'
+            }
+        })
     })
 })

@@ -44,22 +44,16 @@ $(function() {
             })
             .toDataURL('image/png') //将画布转换成base64字符串
         $.ajax({
-                url: 'api/user/avatarChange',
-                method: 'POST',
-                data: {
-                    avatar: base64Str
-                },
-                success: function(res) {
-                    if (res.status !== 200) {
-                        return layui.layer.msg('图像切换失败！')
-                    }
-                    //更新index的用户图像
-                }
-            })
-            //模拟数据，更新图像
-        window.parent.renderUserInfo({
-            userName: 'admin',
-            photo: base64Str
+            url: '/api/user/updateAvatar',
+            method: 'POST',
+            data: {
+                avatar: base64Str
+            },
+            success: function(res) {
+                if (res.code !== 1) return layui.layer.msg('图像更新失败！')
+                layui.layer.msg('更新成功！')
+                window.parent.getUserInfo()
+            }
         })
     })
 

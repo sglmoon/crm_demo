@@ -1,19 +1,7 @@
 $(function() {
-
-    //模拟数据
-    var userInfo = {
-        userName: 'admin'
-    }
-
-    //获取用户信息，正常系统，需要动态加载左侧菜单栏
-    $.get('/api/user/getUserInfo', function(res) {
-        if (res.status === 200) {
-            userInfo = res.data
-        }
-    })
-    renderUserInfo(userInfo)
-
-    //退出
+    //获取用户信息
+    getUserInfo()
+        //退出
     $('#quit').on('click', function() {
         layui.layer.confirm('确认退出登录？', {
             icon: 3,
@@ -27,11 +15,29 @@ $(function() {
 
 })
 
+//获取用户信息，正常系统，需要动态加载左侧菜单栏
+function getUserInfo() {
+    $.get('/api/user/info', function(res) {
+        if (res.code !== 1) {
+            return layui.layer.msg('获取用户信息失败！')
+        }
+        renderUserInfo(res.data)
+    })
+}
+
 function renderUserInfo(userInfo) {
-    $('#userName').html(userInfo.userName)
-    if (userInfo.photo) {
-        $('#userPhoto').attr('src', userInfo.photo)
+    var name = userInfo.nickName || userInfo.userName
+    $('#userName').html(name)
+    if (userInfo.userPic) {
+        $('#userPhoto')
+            .attr('src', userInfo.userPic)
+            .show()
+        $('.text-avatar').hide()
     } else {
-        $('#userPhoto').attr('src', '//tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg')
+        $('#userPhoto').hide()
+        var first = name[0].toUpperCase()
+        $('.text-avatar')
+            .html(first)
+            .show()
     }
 }
