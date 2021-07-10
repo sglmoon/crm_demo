@@ -17,13 +17,13 @@
             <!-- 搜索栏 -->
             <form class="layui-form" id="form-search">
                 <div class="layui-form-item layui-inline">
-                    <select id="selCate" name="cate_id"></select>
+                    <select id="selCate" name="cateId"></select>
                 </div>
                 <div class="layui-form-item layui-inline">
-                    <select name="state">
+                    <select name="status">
                     <option value="">所有状态</option>
-                    <option value="已发布">已发布</option>
-                    <option value="草稿">草稿</option>
+                    <option value="1">已发布</option>
+                    <option value="0">草稿</option>
                   </select>
                 </div>
                 <div class="layui-form-item layui-inline">
@@ -33,14 +33,16 @@
             <!-- 列表数据 -->
             <table class="layui-table">
                 <colgroup>
+                    <col width="150">
                     <col />
                     <col width="150" />
-                    <col width="180" />
+                    <col width="150" />
                     <col width="150" />
                     <col width="150" />
                 </colgroup>
                 <thead>
                     <tr>
+                        <th>作者</th>
                         <th>文章标题</th>
                         <th>分类</th>
                         <th>发表时间</th>
@@ -59,13 +61,14 @@
     <script type="text/html" id="tpl-table">
         {{each data}}
         <tr>
+            <td>{{$value.author}}</td>
             <td>{{$value.title}}</td>
-            <td>{{$value.cateName}}</td>
+            <td>{{$value.cate}}</td>
             <td>{{$value.pubDate|dataFormat}}</td>
-            <td>{{$value.state}}</td>
+            <td>{{$value.status}}</td>
             <td>
                 <button type="button" class="layui-btn layui-btn-xs">编辑</button>
-                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs btn-delete" data-id="{{$value.id}}">删除</button>
+                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs btn-delete" data-id="{{$value.uid}}">删除</button>
             </td>
         </tr>
         {{/each}}
@@ -75,7 +78,7 @@
     <script type="text/html" id="tpl-cate">
         <option value="">所有分类</option>
         {{each data}}
-        <option value="{{$value.id}}">{{$value.name}}</option>
+        <option value="{{$value.uid}}">{{$value.name}}</option>
         {{/each}}
     </script>
 

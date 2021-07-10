@@ -4,21 +4,17 @@ $(function() {
 
     //初始化下拉框
     function initCate() {
-        var cateList = [
-            { id: 1, name: '国际' },
-            { id: 2, name: '军事' },
-            { id: 3, name: '航天' }
-        ]
         $.ajax({
-            url: '/api/article/getAticleCate',
+            url: '/api/articleCate/getList',
             method: 'GET',
             success: function(res) {
-                cateList = res.data
+                if (res.code == 1) {
+                    var html = template('tpl-cate', { data: res.data })
+                    $('#selCate').html(html)
+                    form.render()
+                }
             }
         })
-        var html = template('tpl-cate', { data: cateList })
-        $('#selCate').html(html)
-        form.render()
     }
     initCate()
 
@@ -61,11 +57,11 @@ $(function() {
     })
 
     // 定义文章的发布状态
-    var art_state = '已发布'
+    var art_state = 1; //'已发布'
 
     // 为存为草稿按钮，绑定点击事件处理函数
     $('#btnSave2').on('click', function() {
-        art_state = '草稿'
+        art_state = 0; //'草稿'
     })
 
     // 为表单绑定 submit 提交事件
@@ -75,7 +71,7 @@ $(function() {
             // 2. 基于 form 表单，快速创建一个 FormData 对象
         var fd = new FormData($(this)[0])
             // 3. 将文章的发布状态，存到 fd 中
-        fd.append('state', art_state)
+        fd.append('status', art_state)
         console.log(fd)
 
         // 4. 将封面裁剪过后的图片，输出为一个文件对象
@@ -97,19 +93,16 @@ $(function() {
 
     // 定义一个发布文章的方法
     function publishArticle(fd) {
-        fd.forEach(function(val, key) {
-            console.log(key, val)
-        })
         $.ajax({
             method: 'POST',
-            url: '/api/article/addArticle',
+            url: '/api/article/save',
             data: fd,
             // 注意：如果向服务器提交的是 FormData 格式的数据，
             // 必须添加以下两个配置项
             contentType: false,
             processData: false,
             success: function(res) {
-                if (res.status !== 0) {
+                if (res.code !== 1) {
                     return layer.msg('发布文章失败！')
                 }
                 layer.msg('发布文章成功！')
@@ -117,7 +110,6 @@ $(function() {
                 location.href = '/article/artList.html'
             }
         })
-        location.href = '/article/artList.html'
     }
 
 })

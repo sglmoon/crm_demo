@@ -1,7 +1,26 @@
 $(function() {
-
+    //获取文章列表
     getCateList()
 
+    // 定义美化时间的过滤器
+    template.defaults.imports.dataFormat = function(date) {
+        const dt = new Date(date)
+
+        var y = dt.getFullYear()
+        var m = padZero(dt.getMonth() + 1)
+        var d = padZero(dt.getDate())
+
+        var hh = padZero(dt.getHours())
+        var mm = padZero(dt.getMinutes())
+        var ss = padZero(dt.getSeconds())
+
+        return y + '-' + m + '-' + d + ' ' + hh + ':' + mm + ':' + ss
+    }
+
+    // 定义补零的函数
+    function padZero(n) {
+        return n > 9 ? n : '0' + n
+    }
 
     //添加类型，弹窗层
     var indexAdd = null
@@ -19,20 +38,19 @@ $(function() {
     $('body').on('submit', '#form_add', function(e) {
         e.preventDefault()
         $.ajax({
-            url: '/api/article/addCate',
+            url: '/api/articleCate/add',
             method: 'POST',
             data: $(this).serialize(),
             success: function(res) {
-                if (res.status !== 200) {
-                    return layui.layer.msg('添加失败！')
+                if (res.code !== 1) {
+                    return layui.layer.msg('添加失败:' + res.msg)
                 }
-                layui.layer.msg('添加成功')
-                    // 关闭弹窗，刷新列表
+                layui.layer.msg('添加成功');
+                // 关闭弹窗，刷新列表
                 getCateList()
                 layui.layer.close(indexAdd)
             }
         })
-        layui.layer.close(indexAdd)
     })
 
     // 修改分类信息
@@ -49,42 +67,32 @@ $(function() {
         //获取数据，加载信息
         var id = $(this).data('id')
         $.ajax({
-            url: '/api/article/getCateInfo',
+            url: '/api/articleCate/info',
             method: 'GET',
             data: {
-                id: id
+                uid: id
             },
             success: function(res) {
                 layui.form.val('form_edit', res.data)
             }
         })
-
-        //加载模拟数据
-        var cateInfo = {
-            id: 101,
-            name: 'NBA',
-            alias: '职业篮球协会',
-            createDate: '2021-06-24'
-        }
-        layui.form.val('form_edit', cateInfo)
     })
 
     $('body').on('submit', '#form_edit', function(e) {
         e.preventDefault()
         $.ajax({
-            url: '/api/article/editCate',
+            url: '/api/articleCate/update',
             method: 'POST',
             data: layui.form.val('form_edit'),
             success: function(res) {
-                if (res.status !== 200) {
-                    return layui.layer.msg('修改失败！')
+                if (res.code !== 1) {
+                    return layui.layer.msg('修改失败：' + res.msg)
                 }
                 layui.layer.msg('修改成功！')
                 getCateList()
                 layui.layer.close(indexEdit)
             }
         })
-        layui.layer.close(indexEdit)
     })
 
     //删除
@@ -95,14 +103,14 @@ $(function() {
             icon: 3
         }, function(index) {
             $.ajax({
-                url: '/api/article/delCate',
+                url: '/api/articleCate/delete',
                 method: 'POST',
                 data: {
-                    id: id
+                    uid: id
                 },
                 success: function(res) {
-                    if (res.status !== 200) {
-                        return layui.layer.msg('删除失败！')
+                    if (res.code !== 1) {
+                        return layui.layer.msg('删除失败:' + res.msg)
                     }
                     layui.layer.msg('删除成功！')
                     getCateList()
@@ -114,43 +122,17 @@ $(function() {
 
 })
 
-var cateData = [{
-        id: 101,
-        name: 'NBA',
-        alias: '职业篮球协会',
-        createDate: '2021-06-24'
-    },
-    {
-        id: 102,
-        name: '军事',
-        alias: '环球军事',
-        createDate: '2021-06-24'
-    },
-    {
-        id: 103,
-        name: '航空',
-        alias: '国际空间站',
-        createDate: '2021-06-24'
-    }
-]
-
-
-
+//获取文章列表
 function getCateList() {
-    //模拟数据
     $.ajax({
-        url: '/api/article/getCateList',
+        url: '/api/articleCate/getList',
         method: 'GET',
         success: function(res) {
-            if (res.status !== 200) {
-                return layui.layer.msg('获取列表失败')
-            }
-            cateData = res.data
+            if (res.code !== 1) return layui.layer.msg('获取列表失败');
+            //模板引擎，渲染列表数据
+            var listHtml = template('tpl_tb', { data: res.data });
+            //渲染列表
+            $('#cateList').html(listHtml)
         }
     })
-
-    //模板引擎，渲染列表数据
-    var listHtml = template('tpl_tb', { data: cateData })
-        //渲染列表
-    $('#cateList').html(listHtml)
 }
